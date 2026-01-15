@@ -171,7 +171,3 @@ pnpm migrate:down
 ```bash
 pnpm typecheck
 ```
-
-## ライセンス
-
-このプロジェクトはMITライセンスの下で公開されています。
