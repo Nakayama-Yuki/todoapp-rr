@@ -9,11 +9,22 @@
     "typecheck": "react-router typegen && tsc",
     "migrate": "node-pg-migrate",
     "migrate:up": "node-pg-migrate up",
-    "migrate:down": "node-pg-migrate down"
+    "migrate:down": "node-pg-migrate down",
+    "docker:dev": "docker-compose -f docker-compose.dev.yml --env-file .env up -d",
+    "docker:prod": "docker-compose -f docker-compose.prod.yml --env-file .env up -d --build",
+    "dev:down": "docker-compose -f docker-compose.dev.yml down",
+    "prod:down": "docker-compose -f docker-compose.prod.yml down",
+    "docker:logs": "docker-compose -f docker-compose.dev.yml logs -f",
+    "prod:logs": "docker-compose -f docker-compose.prod.yml logs -f",
+    "docker:ps": "docker-compose -f docker-compose.dev.yml ps",
+    "prod:ps": "docker-compose -f docker-compose.prod.yml ps",
+    "postgres:up": "docker-compose -f docker-compose.dev.yml --env-file .env up -d postgres",
+    "postgres:logs": "docker-compose -f docker-compose.dev.yml logs postgres"
   },
   "dependencies": {
     "@react-router/node": "^7.12.0",
     "@react-router/serve": "^7.12.0",
+    "dotenv": "^16.4.5",
     "isbot": "^5.1.32",
     "pg": "^8.16.3",
     "react": "^19.2.3",

@@ -1,7 +1,30 @@
+import "dotenv/config";
 import { Pool, type PoolClient } from "pg";
 
+// 環境変数のバリデーション
+const requiredEnvVars = [
+  "DATABASE_HOST",
+  "DATABASE_PORT",
+  "DATABASE_USER",
+  "DATABASE_PASSWORD",
+  "DATABASE_NAME",
+];
+
+const missingEnvVars = requiredEnvVars.filter((key) => !process.env[key]);
+
+if (missingEnvVars.length > 0) {
+  console.error(
+    "❌ Missing required environment variables:",
+    missingEnvVars.join(", "),
+  );
+  console.error("Environment variables present:", Object.keys(process.env));
+  throw new Error(
+    `Missing required environment variables: ${missingEnvVars.join(", ")}`,
+  );
+}
+
 const pool = new Pool({
-  host: process.env.DATABASE_HOST || "localhost",
+  host: process.env.DATABASE_HOST,
   user: process.env.DATABASE_USER,
   password: process.env.DATABASE_PASSWORD,
   database: process.env.DATABASE_NAME,
