@@ -4,21 +4,25 @@
 
 ## セットアップ手順
 
-### 1. PostgreSQLの起動
+### 1. PostgreSQLの起動（開発）
+
+DockerでDBだけを起動します（アプリはローカルで動かす想定）。
 
 ```bash
-docker-compose up -d
+docker compose --profile db up -d
 ```
 
 PostgreSQLコンテナが起動します。接続情報は`.env`ファイルに記載されています。
 
-### 2. データベースマイグレーション
+### 2. データベースマイグレーション（開発は手動）
 
 ```bash
 pnpm migrate:up
 ```
 
 `migrations/`ディレクトリ内のマイグレーションファイルを実行して、`todos`テーブルを作成します。
+
+> 本番相当（`--profile prod`）で起動する場合は、コンテナ起動時に自動でマイグレーションが走ります。
 
 ### 3. 開発サーバーの起動
 
@@ -27,6 +31,14 @@ pnpm dev
 ```
 
 アプリケーションが`http://localhost:5173`で起動します。
+
+### 4. 本番相当の起動（アプリ＋DBをDockerで）
+
+```bash
+docker compose --profile prod up -d --build
+```
+
+アプリが`http://localhost:3000`で起動します（内部ではPostgreSQLサービス名`postgres`で接続）。
 
 ## 使用技術
 
@@ -114,13 +126,18 @@ id: number (必須)
 `.env`ファイルで設定：
 
 ```
-DATABASE_URL=postgres://todouser:todopass@localhost:5432/todoapp
+DATABASE_URL=postgres://todouser:todopass@localhost:5432/todoapp  # 開発（ローカルアプリ→Docker DB）
 DATABASE_HOST=localhost
 DATABASE_PORT=5432
 DATABASE_USER=todouser
 DATABASE_PASSWORD=todopass
 DATABASE_NAME=todoapp
 NODE_ENV=development
+
+# Dockerコンテナ内でアプリを動かす場合（prodプロファイル）に切り替える値の例：
+# DATABASE_URL=postgres://todouser:todopass@postgres:5432/todoapp
+# DATABASE_HOST=postgres
+# NODE_ENV=production
 ```
 
 ## ビルドとデプロイ

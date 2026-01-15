@@ -24,5 +24,8 @@ COPY --from=production-dependencies-env /app/node_modules /app/node_modules
 COPY --from=build-env /app/build /app/build
 COPY ./migrations /app/migrations
 WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=3000
+EXPOSE 3000
 # Run migrations and start the application
-CMD ["sh", "-c", "pnpm exec node-pg-migrate up && npm run start"]
+CMD ["sh", "-c", "pnpm exec node-pg-migrate up && pnpm run start"]
