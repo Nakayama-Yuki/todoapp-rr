@@ -1,10 +1,5 @@
-import type { Route } from "./+types/todos";
-import {
-  Form,
-  useLoaderData,
-  useActionData,
-  useNavigation,
-} from "react-router";
+import type { Route } from "./+types/home";
+import { Form, useActionData, useNavigation } from "react-router";
 import * as db from "~/db/index";
 import { TodoSchema, UpdateTodoSchema, type Todo } from "~/schemas/todo";
 
@@ -159,7 +154,7 @@ export default function TodosPage({ loaderData }: Route.ComponentProps) {
                   />
                   <button
                     type="submit"
-                    className={`flex-shrink-0 w-6 h-6 rounded border-2 transition-colors flex items-center justify-center ${
+                    className={`shrink-0 w-6 h-6 rounded border-2 transition-colors flex items-center justify-center ${
                       todo.completed ?
                         "bg-green-600 border-green-600"
                       : "border-slate-500 hover:border-green-600"
@@ -192,7 +187,7 @@ export default function TodosPage({ loaderData }: Route.ComponentProps) {
                   </span>
                 </Form>
 
-                <Form method="post" className="flex-shrink-0">
+                <Form method="post" className="shrink-0">
                   <input type="hidden" name="intent" value="delete" />
                   <input type="hidden" name="id" value={todo.id} />
                   <button
