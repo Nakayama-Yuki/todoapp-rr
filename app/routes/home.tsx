@@ -45,9 +45,13 @@ export async function action({ request }: Route.ActionArgs) {
   if (intent === "update") {
     const id = formData.get("id");
     const title = formData.get("title");
-    const completed = formData.get("completed") === "true";
+    const completedStr = formData.get("completed");
+    const completed = completedStr ? completedStr === "true" : undefined;
 
-    const validation = UpdateTodoSchema.safeParse({ title, completed });
+    const validation = UpdateTodoSchema.safeParse({
+      title: title || undefined,
+      completed,
+    });
     if (!validation.success) {
       return {
         error: validation.error.flatten().fieldErrors.title?.[0],
