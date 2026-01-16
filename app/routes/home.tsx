@@ -1,5 +1,4 @@
 import type { Route } from "./+types/home";
-import { Welcome } from "../welcome/welcome";
 import { Link } from "react-router";
 
 export function meta({}: Route.MetaArgs) {
@@ -12,7 +11,6 @@ export function meta({}: Route.MetaArgs) {
 export default function Home() {
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-900 to-slate-800">
-      <Welcome />
       <div className="flex justify-center pb-8">
         <Link
           to="/todos"
