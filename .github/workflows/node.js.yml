@@ -1,0 +1,97 @@
+name: Node.js CI(pnpm)
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+# セキュリティのため、必要最小限の権限のみを付与
+permissions:
+  contents: read
+
+# ジョブの定義（実行される処理のまとまり）
+jobs:
+  # "build"という名前のジョブ
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    # 環境変数を設定（データベース接続情報をSecretsから設定）
+    env:
+      DATABASE_HOST: localhost
+      DATABASE_PORT: 5432
+      DATABASE_USER: ${{ secrets.POSTGRES_USER }}
+      DATABASE_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      DATABASE_NAME: ${{ secrets.POSTGRES_DB }}
+
+    # Service Containers: PostgreSQL データベースサービス
+    # 詳細: https://docs.github.com/ja/actions/using-containerized-services/about-service-containers
+    services:
+      # サービスコンテナにアクセスするために使用するラベル
+      postgres:
+        # Docker Hub イメージ
+        image: postgres:17-alpine
+        # PostgreSQL の環境変数を GitHub Secrets から設定
+        env:
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        # PostgreSQL が起動するまで待機するヘルスチェックを設定
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        # サービスコンテナのポート 5432 を Docker ホストにマッピング
+        ports:
+          - 5432:5432
+
+    # 実行するステップの定義
+    steps:
+      # ステップ1: リポジトリのコードをチェックアウト（取得）
+      - uses: actions/checkout@v6
+
+      # ステップ2: pnpmパッケージマネージャーをインストール
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10 # pnpm v10を使用
+          run_install: false # 自動的に依存関係をインストールしない
+
+      # ステップ3: LTSのNode.jsをセットアップ
+      - name: Use Node.js LTS
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          cache: "pnpm" # pnpmのキャッシュを有効化
+
+      # ステップ4: プロジェクトの依存関係をインストール
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # ステップ5: データベーススキーマを初期化
+      # ヘルスチェックにより PostgreSQL は既に起動しているが、
+      # 確実に接続できることを確認してからスキーマを初期化する
+      - name: Initialize database
+        run: |
+          set -e
+          # PostgreSQL クライアント (psql) を使用してスキーマを初期化
+          psql -h localhost -p 5432 -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_DB }} -f init.sql
+        env:
+          PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+
+      # ステップ6: TypeScript型チェックを実行
+      - name: Type check
+        run: pnpm run typecheck
+
+      # ステップ7: Biomeでlint & formatチェックを実行
+      - name: Lint and format check
+        run: pnpm run check
+
+      # ステップ8: プロジェクトをビルド
+      # DATABASE_* 環境変数はジョブレベルのenv変数として既に設定されているため、
+      # app/db/index.ts の環境変数バリデーションを通過できる
+      - name: Build project
+        run: pnpm run build
