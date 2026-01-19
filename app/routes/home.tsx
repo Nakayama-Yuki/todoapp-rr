@@ -109,13 +109,6 @@ export default function TodosPage({ loaderData }: Route.ComponentProps) {
           </div>
         )}
 
-        {/* Success message */}
-        {actionData?.success && (
-          <div className="mb-6 p-4 bg-green-900/50 border border-green-700 rounded-lg text-green-100">
-            Updated successfully!
-          </div>
-        )}
-
         {/* Create form */}
         <Form method="post" className="mb-8">
           <div className="flex gap-2">
@@ -205,28 +198,6 @@ export default function TodosPage({ loaderData }: Route.ComponentProps) {
             ))
           }
         </div>
-
-        {/* Stats */}
-        {todos.length > 0 && (
-          <div className="mt-8 pt-8 border-t border-slate-600 flex gap-8 justify-center text-slate-400">
-            <div>
-              <p className="text-2xl font-bold text-white">
-                {todos.filter((t) => !t.completed).length}
-              </p>
-              <p className="text-sm">Active</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-white">
-                {todos.filter((t) => t.completed).length}
-              </p>
-              <p className="text-sm">Completed</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-white">{todos.length}</p>
-              <p className="text-sm">Total</p>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
