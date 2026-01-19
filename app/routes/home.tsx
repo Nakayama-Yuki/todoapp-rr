@@ -1,6 +1,6 @@
 import type { Route } from "./+types/home";
 import { Form, useActionData, useNavigation } from "react-router";
-import { action } from "../components/home.action";
+export { action } from "../components/home.action";
 export { loader } from "../components/home.loader";
 
 export function meta({}: Route.MetaArgs) {
@@ -12,7 +12,7 @@ export function meta({}: Route.MetaArgs) {
 
 export default function TodosPage({ loaderData }: Route.ComponentProps) {
   const todos = loaderData;
-  const actionData = useActionData<typeof action>();
+  const actionData = useActionData();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
 
