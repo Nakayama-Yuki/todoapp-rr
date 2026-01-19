@@ -69,7 +69,7 @@ jobs:
 
       # ステップ4: プロジェクトの依存関係をインストール
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       # ステップ5: データベーススキーマを初期化
       # ヘルスチェックにより PostgreSQL は既に起動しているが、
