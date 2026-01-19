@@ -203,6 +203,8 @@ pnpm run dev:down
 docker volume rm todoapp-rr_postgres_data
 ```
 
+新しくボリュームを作成して再起動すると、`init.sql` に定義した未完了のサンプルTodoが3件自動投入されます。
+
 ### ログを確認したい場合
 
 ```bash
