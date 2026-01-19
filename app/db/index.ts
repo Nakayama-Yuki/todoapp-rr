@@ -1,5 +1,10 @@
 import "dotenv/config";
-import { Pool, type PoolClient } from "pg";
+import {
+  Pool,
+  type PoolClient,
+  type QueryResult,
+  type QueryResultRow,
+} from "pg";
 
 // 環境変数のバリデーション
 const requiredEnvVars = [
@@ -45,7 +50,7 @@ pool.on("error", (err, client) => {
 /**
  * Execute a single query
  */
-export const query = async (text: string, params?: any[]) => {
+export const query = async (text: string, params?: unknown[]) => {
   const start = Date.now();
   try {
     const res = await pool.query(text, params);
@@ -63,21 +68,21 @@ export const query = async (text: string, params?: any[]) => {
  */
 export const getClient = async (): Promise<PoolClient> => {
   const client = await pool.connect();
-  const originalQuery = (client.query as any).bind(client);
+  const originalQuery = client.query.bind(client) as typeof client.query;
   const timeout = setTimeout(() => {
     console.error("A client has been checked out for more than 5 seconds!");
   }, 5000);
 
-  (client.query as any) = function (...args: any[]) {
+  client.query = function (...args: Parameters<typeof originalQuery>) {
     clearTimeout(timeout);
     return originalQuery(...args);
-  };
+  } as typeof client.query;
 
-  const originalRelease = (client.release as any).bind(client);
-  client.release = function (error?: Error) {
+  const originalRelease = client.release.bind(client);
+  client.release = (error?: Error | boolean) => {
     clearTimeout(timeout);
     return originalRelease(error);
-  } as any;
+  };
 
   return client;
 };
