@@ -1,10 +1,5 @@
 import "dotenv/config";
-import {
-  Pool,
-  type PoolClient,
-  type QueryResult,
-  type QueryResultRow,
-} from "pg";
+import { Pool, type PoolClient } from "pg";
 
 // 環境変数のバリデーション
 const requiredEnvVars = [
