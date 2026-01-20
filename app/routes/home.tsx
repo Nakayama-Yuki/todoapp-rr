@@ -1,5 +1,6 @@
-import type { Route } from "./+types/home";
 import { Form, useActionData, useNavigation } from "react-router";
+import type { Route } from "./+types/home";
+
 export { action } from "../components/home.action";
 export { loader } from "../components/home.loader";
 
@@ -51,11 +52,12 @@ export default function TodosPage({ loaderData }: Route.ComponentProps) {
 
         {/* Todos list */}
         <div className="space-y-2">
-          {todos.length === 0 ?
+          {todos.length === 0 ? (
             <p className="text-slate-400 text-center py-8">
               No todos yet. Create one to get started!
             </p>
-          : todos.map((todo) => (
+          ) : (
+            todos.map((todo) => (
               <div
                 key={todo.id}
                 className="flex items-center gap-3 p-4 bg-slate-700 rounded-lg hover:bg-slate-600 transition-colors group"
@@ -71,9 +73,9 @@ export default function TodosPage({ loaderData }: Route.ComponentProps) {
                   <button
                     type="submit"
                     className={`shrink-0 w-6 h-6 rounded border-2 transition-colors flex items-center justify-center ${
-                      todo.completed ?
-                        "bg-green-600 border-green-600"
-                      : "border-slate-500 hover:border-green-600"
+                      todo.completed
+                        ? "bg-green-600 border-green-600"
+                        : "border-slate-500 hover:border-green-600"
                     }`}
                   >
                     {todo.completed && (
@@ -94,9 +96,9 @@ export default function TodosPage({ loaderData }: Route.ComponentProps) {
                   </button>
                   <span
                     className={`flex-1 text-left ${
-                      todo.completed ?
-                        "text-slate-400 line-through"
-                      : "text-white"
+                      todo.completed
+                        ? "text-slate-400 line-through"
+                        : "text-white"
                     }`}
                   >
                     {todo.title}
@@ -115,7 +117,7 @@ export default function TodosPage({ loaderData }: Route.ComponentProps) {
                 </Form>
               </div>
             ))
-          }
+          )}
         </div>
       </div>
     </div>

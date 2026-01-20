@@ -1,6 +1,6 @@
-import type { Route } from "../routes/+types/home";
 import * as db from "~/db/index";
 import { TodoSchema, UpdateTodoSchema } from "~/schemas/todo";
+import type { Route } from "../routes/+types/home";
 
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
@@ -50,9 +50,9 @@ export async function action({ request }: Route.ActionArgs) {
         "UPDATE todos SET title = COALESCE($1, title), completed = COALESCE($2, completed), updated_at = NOW() WHERE id = $3",
         [
           validation.data.title || null,
-          validation.data.completed !== undefined ?
-            validation.data.completed
-          : null,
+          validation.data.completed !== undefined
+            ? validation.data.completed
+            : null,
           id,
         ],
       );
