@@ -1,18 +1,23 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
 
-test('has title', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
+test("should display todo page with title", async ({ page }) => {
+  // ホームページにアクセス
+  await page.goto("/");
 
-  // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/Playwright/);
+  // ページタイトルが表示されていることを確認
+  await expect(page.getByRole("heading", { name: "My Todos" })).toBeVisible();
 });
 
-test('get started link', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
+test("should create a new todo", async ({ page }) => {
+  // ホームページにアクセス
+  await page.goto("/");
 
-  // Click the get started link.
-  await page.getByRole('link', { name: 'Get started' }).click();
+  // 入力フィールドにテキストを入力
+  await page.getByPlaceholder("Add a new todo...").fill("Test todo item");
 
-  // Expects page to have a heading with the name of Installation.
-  await expect(page.getByRole('heading', { name: 'Installation' })).toBeVisible();
+  // "Add" ボタンをクリック
+  await page.getByRole("button", { name: "Add" }).click();
+
+  // 新しいtodoが一覧に表示されることを確認
+  await expect(page.getByText("Test todo item")).toBeVisible();
 });
