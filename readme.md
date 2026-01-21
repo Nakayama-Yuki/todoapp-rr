@@ -176,6 +176,15 @@ pnpm run docker:prod
 
 ## トラブルシューティング
 
+### Playwright テストが失敗する場合
+
+Chromium ブラウザの起動に必要なシステムライブラリが不足している場合があります：
+
+```bash
+# Playwright のシステム依存関係を自動インストール
+pnpm exec playwright install --with-deps chromium
+```
+
 ### データベースに接続できない場合
 
 1. Docker が起動していることを確認
