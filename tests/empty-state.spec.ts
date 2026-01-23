@@ -1,10 +1,12 @@
 import { expect, test } from "@playwright/test";
-import { buildTitle, createTodo, deleteTodo, gotoHome } from "./helpers/todos";
+import { buildTitle, clearAllTodos, createTodo, deleteTodo, gotoHome } from "./helpers/todos";
 
 test.describe("Empty State", () => {
-  test("displays empty state message when no todos exist", async ({ page }) => {
-    await gotoHome(page);
+  test.beforeEach(async ({ page }) => {
+    await clearAllTodos(page);
+  });
 
+  test("displays empty state message when no todos exist", async ({ page }) => {
     await test.step("Verify empty state message is displayed", async () => {
       await expect(
         page.getByText("No todos yet. Create one to get started!")
@@ -14,8 +16,6 @@ test.describe("Empty State", () => {
 
   test("displays todos list after creating first todo", async ({ page }) => {
     const title = buildTitle("First todo");
-
-    await gotoHome(page);
 
     await test.step("Verify initial empty state", async () => {
       await expect(
@@ -43,7 +43,6 @@ test.describe("Empty State", () => {
   test("shows empty state again after deleting all todos", async ({ page }) => {
     const title = buildTitle("Temporary todo");
 
-    await gotoHome(page);
     await createTodo(page, title);
 
     await test.step("Verify todo exists", async () => {

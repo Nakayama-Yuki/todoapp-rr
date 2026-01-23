@@ -1,11 +1,14 @@
 import { expect, test } from "@playwright/test";
-import { buildTitle, createTodo, deleteTodo, gotoHome } from "./helpers/todos";
+import { buildTitle, clearAllTodos, createTodo, deleteTodo, gotoHome } from "./helpers/todos";
 
 test.describe("UI State and User Feedback", () => {
+  test.beforeEach(async ({ page }) => {
+    await clearAllTodos(page);
+  });
+
   test("displays 'Adding...' state during form submission", async ({ page }) => {
     const title = buildTitle("Test submission state");
 
-    await gotoHome(page);
 
     await test.step("Fill form and check button state", async () => {
       await page.getByPlaceholder("Add a new todo...").fill(title);
@@ -36,7 +39,6 @@ test.describe("UI State and User Feedback", () => {
   test("disables input field during form submission", async ({ page }) => {
     const title = buildTitle("Test input disable");
 
-    await gotoHome(page);
 
     await test.step("Check input is initially enabled", async () => {
       const input = page.getByPlaceholder("Add a new todo...");
@@ -61,7 +63,6 @@ test.describe("UI State and User Feedback", () => {
   test("displays checkmark icon when todo is completed", async ({ page }) => {
     const title = buildTitle("Test checkmark");
 
-    await gotoHome(page);
 
     await test.step("Create todo", async () => {
       await createTodo(page, title);
@@ -99,7 +100,6 @@ test.describe("UI State and User Feedback", () => {
   });
 
   test("displays error message and allows retry", async ({ page }) => {
-    await gotoHome(page);
 
     await test.step("Submit empty form to trigger error", async () => {
       await page.getByRole("button", { name: /add/i }).click();
@@ -139,7 +139,6 @@ test.describe("UI State and User Feedback", () => {
   test("clears input field after successful submission", async ({ page }) => {
     const title = buildTitle("Test input clear");
 
-    await gotoHome(page);
 
     await test.step("Fill and submit form", async () => {
       const input = page.getByPlaceholder("Add a new todo...");
@@ -164,7 +163,6 @@ test.describe("UI State and User Feedback", () => {
   test("shows delete button on hover", async ({ page }) => {
     const title = buildTitle("Test hover delete");
 
-    await gotoHome(page);
     await createTodo(page, title);
 
     await test.step("Hover over todo item", async () => {
@@ -188,7 +186,6 @@ test.describe("UI State and User Feedback", () => {
   test("displays completed todo with line-through style", async ({ page }) => {
     const title = buildTitle("Test line-through");
 
-    await gotoHome(page);
     await createTodo(page, title);
 
     await test.step("Toggle todo to completed", async () => {

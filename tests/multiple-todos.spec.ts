@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import {
   buildTitle,
+  clearAllTodos,
   createTodo,
   deleteTodo,
   getTodoItem,
@@ -9,6 +10,10 @@ import {
 } from "./helpers/todos";
 
 test.describe("Multiple Todos Management", () => {
+  test.beforeEach(async ({ page }) => {
+    await clearAllTodos(page);
+  });
+
   test("creates and displays multiple todos", async ({ page }) => {
     const titles = [
       buildTitle("First todo"),
@@ -16,7 +21,6 @@ test.describe("Multiple Todos Management", () => {
       buildTitle("Third todo"),
     ];
 
-    await gotoHome(page);
 
     await test.step("Create multiple todos", async () => {
       for (const title of titles) {
@@ -51,7 +55,6 @@ test.describe("Multiple Todos Management", () => {
       buildTitle("Keep 2"),
     ];
 
-    await gotoHome(page);
 
     await test.step("Create multiple todos", async () => {
       for (const title of titles) {
@@ -85,7 +88,6 @@ test.describe("Multiple Todos Management", () => {
       buildTitle("Todo 3"),
     ];
 
-    await gotoHome(page);
 
     await test.step("Create multiple todos", async () => {
       for (const title of titles) {
@@ -130,7 +132,6 @@ test.describe("Multiple Todos Management", () => {
       buildTitle("Third created"),
     ];
 
-    await gotoHome(page);
 
     await test.step("Create todos sequentially with delay", async () => {
       for (const title of titles) {

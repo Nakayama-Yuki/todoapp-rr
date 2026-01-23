@@ -1,10 +1,12 @@
 import { expect, test } from "@playwright/test";
-import { buildTitle, createTodo, deleteTodo, gotoHome } from "./helpers/todos";
+import { buildTitle, clearAllTodos, createTodo, deleteTodo, gotoHome } from "./helpers/todos";
 
 test.describe("Error Handling and Recovery", () => {
-  test("recovers from validation error and creates todo successfully", async ({ page }) => {
-    await gotoHome(page);
+  test.beforeEach(async ({ page }) => {
+    await clearAllTodos(page);
+  });
 
+  test("recovers from validation error and creates todo successfully", async ({ page }) => {
     await test.step("Trigger validation error with empty input", async () => {
       await page.getByRole("button", { name: /add/i }).click();
       await expect(page.getByText("Title is required")).toBeVisible();
@@ -32,8 +34,6 @@ test.describe("Error Handling and Recovery", () => {
   });
 
   test("handles multiple consecutive errors correctly", async ({ page }) => {
-    await gotoHome(page);
-
     await test.step("Trigger first error - empty title", async () => {
       await page.getByRole("button", { name: /add/i }).click();
       await expect(page.getByText("Title is required")).toBeVisible();
@@ -80,8 +80,6 @@ test.describe("Error Handling and Recovery", () => {
     const firstTitle = buildTitle("First todo");
     const secondTitle = buildTitle("Second todo");
 
-    await gotoHome(page);
-
     await test.step("Create and delete first todo", async () => {
       await createTodo(page, firstTitle);
       await deleteTodo(page, firstTitle);
@@ -107,8 +105,6 @@ test.describe("Error Handling and Recovery", () => {
       buildTitle("Rapid 2"),
       buildTitle("Rapid 3"),
     ];
-
-    await gotoHome(page);
 
     await test.step("Create todos rapidly", async () => {
       for (const title of titles) {
@@ -142,7 +138,6 @@ test.describe("Error Handling and Recovery", () => {
   test("recovers from failed toggle and allows retry", async ({ page }) => {
     const title = buildTitle("Toggle test");
 
-    await gotoHome(page);
     await createTodo(page, title);
 
     await test.step("Toggle todo completion", async () => {
@@ -170,8 +165,6 @@ test.describe("Error Handling and Recovery", () => {
   });
 
   test("maintains form state when navigating away and back", async ({ page }) => {
-    await gotoHome(page);
-
     await test.step("Fill form but don't submit", async () => {
       await page.getByPlaceholder("Add a new todo...").fill("Unsaved todo");
     });
@@ -187,8 +180,6 @@ test.describe("Error Handling and Recovery", () => {
   });
 
   test("error message disappears after successful submission", async ({ page }) => {
-    await gotoHome(page);
-
     await test.step("Create error state", async () => {
       await page.getByRole("button", { name: /add/i }).click();
       await expect(page.getByText("Title is required")).toBeVisible();

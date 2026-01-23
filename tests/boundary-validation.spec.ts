@@ -1,11 +1,13 @@
 import { expect, test } from "@playwright/test";
-import { buildTitle, createTodo, deleteTodo, gotoHome } from "./helpers/todos";
+import { buildTitle, clearAllTodos, createTodo, deleteTodo, gotoHome } from "./helpers/todos";
 
 test.describe("Form Input Boundary Tests", () => {
+  test.beforeEach(async ({ page }) => {
+    await clearAllTodos(page);
+  });
+
   test("successfully creates a todo with exactly 255 characters", async ({ page }) => {
     const exactTitle = "x".repeat(255);
-
-    await gotoHome(page);
 
     await test.step("Fill and submit form with 255 character title", async () => {
       await page.getByPlaceholder("Add a new todo...").fill(exactTitle);
@@ -23,8 +25,6 @@ test.describe("Form Input Boundary Tests", () => {
 
   test("shows error for title with 256 characters", async ({ page }) => {
     const tooLongTitle = "x".repeat(256);
-
-    await gotoHome(page);
 
     await test.step("Submit form with 256 character title", async () => {
       await page.getByPlaceholder("Add a new todo...").fill(tooLongTitle);
@@ -45,8 +45,6 @@ test.describe("Form Input Boundary Tests", () => {
   test("successfully creates a todo with 1 character (minimum boundary)", async ({ page }) => {
     const minTitle = "a";
 
-    await gotoHome(page);
-
     await test.step("Create todo with single character", async () => {
       await createTodo(page, minTitle);
     });
@@ -61,8 +59,6 @@ test.describe("Form Input Boundary Tests", () => {
   });
 
   test("shows error for whitespace-only title", async ({ page }) => {
-    await gotoHome(page);
-
     await test.step("Submit form with spaces only", async () => {
       await page.getByPlaceholder("Add a new todo...").fill("   ");
       await page.getByRole("button", { name: /add/i }).click();
@@ -75,8 +71,6 @@ test.describe("Form Input Boundary Tests", () => {
 
   test("handles title with newlines and spaces", async ({ page }) => {
     const titleWithNewlines = "Todo\nwith\nnewlines";
-
-    await gotoHome(page);
 
     await test.step("Create todo with newlines", async () => {
       await page.getByPlaceholder("Add a new todo...").fill(titleWithNewlines);
@@ -104,7 +98,6 @@ test.describe("Form Input Boundary Tests", () => {
   test("handles title with special characters", async ({ page }) => {
     const specialTitle = buildTitle("Test @#$%^&*()_+-=[]{}|;':\"<>?,./");
 
-    await gotoHome(page);
 
     await test.step("Create todo with special characters", async () => {
       await createTodo(page, specialTitle);
@@ -122,8 +115,6 @@ test.describe("Form Input Boundary Tests", () => {
   test("trims leading and trailing whitespace", async ({ page }) => {
     const titleWithSpaces = "  Test Todo  ";
     const trimmedTitle = "Test Todo";
-
-    await gotoHome(page);
 
     await test.step("Submit form with leading/trailing spaces", async () => {
       await page.getByPlaceholder("Add a new todo...").fill(titleWithSpaces);
