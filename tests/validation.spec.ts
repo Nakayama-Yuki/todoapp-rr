@@ -1,8 +1,8 @@
 import { expect, test } from "@playwright/test";
-import { gotoHome } from "./helpers/todos";
+import { clearAllTodos, gotoHome } from "./helpers/todos";
 
 test("shows an error when title is empty", async ({ page }) => {
-  await gotoHome(page);
+  await clearAllTodos(page);
 
   await page.getByRole("button", { name: /add/i }).click();
 

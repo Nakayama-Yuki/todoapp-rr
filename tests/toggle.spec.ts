@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import {
   buildTitle,
+  clearAllTodos,
   createTodo,
   deleteTodo,
   getTodoItem,
@@ -8,10 +9,10 @@ import {
   toggleTodo,
 } from "./helpers/todos";
 
-test("toggles a todo completion state on and off", async ({ page }) => {
+test("toggles a todo to completed", async ({ page }) => {
   const title = buildTitle("Toggle todo");
 
-  await gotoHome(page);
+  await clearAllTodos(page);
   await createTodo(page, title);
 
   const todoItem = getTodoItem(page, title);

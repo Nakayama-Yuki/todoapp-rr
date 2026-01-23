@@ -2,15 +2,26 @@ import { expect, test } from "@playwright/test";
 import { buildTitle, createTodo, deleteTodo, gotoHome } from "./helpers/todos";
 
 test.describe("Accessibility Tests", () => {
-  test("verifies ARIA structure of empty state", async ({ page }) => {
+  test.beforeEach(async ({ page }) => {
     await gotoHome(page);
+    
+    // Clean up any existing todos from previous tests
+    const deleteButtons = page.getByRole("button", { name: "Delete" });
+    const count = await deleteButtons.count();
+    for (let i = 0; i < count; i++) {
+      // Always click the first delete button since the list updates after each deletion
+      await deleteButtons.first().click();
+      await page.waitForTimeout(100); // Small delay to ensure DOM updates
+    }
+  });
 
+  test("verifies ARIA structure of empty state", async ({ page }) => {
     await test.step("Verify page ARIA snapshot for empty state", async () => {
       await expect(page.locator("body")).toMatchAriaSnapshot(`
         - heading "My Todos" [level=1]
         - textbox "Add a new todo..."
         - button "Add"
-        - text: No todos yet. Create one to get started!
+        - paragraph: No todos yet. Create one to get started!
       `);
     });
   });
@@ -18,7 +29,6 @@ test.describe("Accessibility Tests", () => {
   test("verifies ARIA structure with todos", async ({ page }) => {
     const title = buildTitle("Accessibility test");
 
-    await gotoHome(page);
     await createTodo(page, title);
 
     await test.step("Verify page structure includes todo item", async () => {
@@ -41,8 +51,6 @@ test.describe("Accessibility Tests", () => {
   });
 
   test("verifies form input has proper accessibility attributes", async ({ page }) => {
-    await gotoHome(page);
-
     await test.step("Check input field accessibility", async () => {
       const input = page.getByPlaceholder("Add a new todo...");
       
@@ -57,7 +65,6 @@ test.describe("Accessibility Tests", () => {
   test("verifies buttons have accessible names", async ({ page }) => {
     const title = buildTitle("Button test");
 
-    await gotoHome(page);
     await createTodo(page, title);
 
     await test.step("Verify Add button has accessible name", async () => {
@@ -77,7 +84,6 @@ test.describe("Accessibility Tests", () => {
   test("verifies toggle button accessibility for completed state", async ({ page }) => {
     const title = buildTitle("Toggle accessibility");
 
-    await gotoHome(page);
     await createTodo(page, title);
 
     await test.step("Verify toggle button is accessible", async () => {
@@ -103,8 +109,6 @@ test.describe("Accessibility Tests", () => {
   });
 
   test("verifies error message is announced", async ({ page }) => {
-    await gotoHome(page);
-
     await test.step("Trigger error", async () => {
       await page.getByRole("button", { name: /add/i }).click();
     });
@@ -121,8 +125,6 @@ test.describe("Accessibility Tests", () => {
 
   test("verifies semantic HTML structure", async ({ page }) => {
     const title = buildTitle("Semantic test");
-
-    await gotoHome(page);
 
     await test.step("Verify heading hierarchy", async () => {
       // Main heading should be h1
@@ -143,8 +145,6 @@ test.describe("Accessibility Tests", () => {
   });
 
   test("verifies keyboard navigation support", async ({ page }) => {
-    await gotoHome(page);
-
     await test.step("Navigate to input with keyboard", async () => {
       await page.keyboard.press("Tab");
       
@@ -176,8 +176,6 @@ test.describe("Accessibility Tests", () => {
   });
 
   test("verifies color contrast for error messages", async ({ page }) => {
-    await gotoHome(page);
-
     await test.step("Trigger error and check styling", async () => {
       await page.getByRole("button", { name: /add/i }).click();
       
@@ -192,8 +190,6 @@ test.describe("Accessibility Tests", () => {
   });
 
   test("verifies disabled state is properly communicated", async ({ page }) => {
-    await gotoHome(page);
-
     await test.step("Fill form and check disabled state during submission", async () => {
       const title = buildTitle("Disabled test");
       const input = page.getByPlaceholder("Add a new todo...");

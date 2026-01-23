@@ -3,6 +3,7 @@ import { z } from "zod";
 export const TodoSchema = z.object({
   title: z
     .string()
+    .trim()
     .min(1, "Title is required")
     .max(255, "Title must be 255 characters or less"),
 });
@@ -10,6 +11,7 @@ export const TodoSchema = z.object({
 export const UpdateTodoSchema = z.object({
   title: z
     .string()
+    .trim()
     .min(1, "Title is required")
     .max(255, "Title must be 255 characters or less")
     .optional(),

@@ -110,6 +110,7 @@ export default function TodosPage({ loaderData }: Route.ComponentProps) {
                   <input type="hidden" name="id" value={todo.id} />
                   <button
                     type="submit"
+                    data-todo-id={todo.id}
                     className="px-3 py-1 text-red-400 hover:text-red-300 hover:bg-red-900/30 rounded transition-colors opacity-0 group-hover:opacity-100"
                   >
                     Delete
