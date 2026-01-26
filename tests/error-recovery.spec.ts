@@ -4,7 +4,6 @@ import {
   clearAllTodos,
   createTodo,
   deleteTodo,
-  gotoHome,
 } from "./helpers/todos";
 
 test.describe("Error Handling and Recovery", () => {

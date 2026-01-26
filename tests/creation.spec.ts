@@ -3,8 +3,7 @@ import {
   buildTitle,
   clearAllTodos,
   createTodo,
-  deleteTodo,
-  gotoHome,
+  deleteTodo, 
 } from "./helpers/todos";
 
 test("creates a todo from the home page", async ({ page }) => {
