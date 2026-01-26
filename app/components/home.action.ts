@@ -1,13 +1,19 @@
+import { redirect } from "react-router";
 import * as db from "~/db/index";
 import { TodoSchema, UpdateTodoSchema } from "~/schemas/todo";
 import type { Route } from "../routes/+types/home";
+
+const normalizeTitle = (value: FormDataEntryValue | null): string => {
+  if (typeof value !== "string") return "";
+  return value.replace(/\s+/g, " ").trim();
+};
 
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   const intent = formData.get("intent");
 
   if (intent === "create") {
-    const title = formData.get("title");
+    const title = normalizeTitle(formData.get("title"));
     const data = { title };
 
     const validation = TodoSchema.safeParse(data);
@@ -22,7 +28,7 @@ export async function action({ request }: Route.ActionArgs) {
         validation.data.title,
         false,
       ]);
-      return { success: true };
+      return redirect("/");
     } catch (error) {
       console.error("Error creating todo:", error);
       return { error: "Failed to create todo" };
@@ -31,7 +37,7 @@ export async function action({ request }: Route.ActionArgs) {
 
   if (intent === "update") {
     const id = formData.get("id");
-    const title = formData.get("title");
+    const title = normalizeTitle(formData.get("title"));
     const completedStr = formData.get("completed");
     const completed = completedStr ? completedStr === "true" : undefined;
 
@@ -56,7 +62,7 @@ export async function action({ request }: Route.ActionArgs) {
           id,
         ],
       );
-      return { success: true };
+      return redirect("/");
     } catch (error) {
       console.error("Error updating todo:", error);
       return { error: "Failed to update todo" };
@@ -66,9 +72,16 @@ export async function action({ request }: Route.ActionArgs) {
   if (intent === "delete") {
     const id = formData.get("id");
 
+    if (!id) {
+      return { error: "Todo id is required" };
+    }
+
     try {
-      await db.query("DELETE FROM todos WHERE id = $1", [id]);
-      return { success: true };
+      const result = await db.query("DELETE FROM todos WHERE id = $1", [id]);
+      if (result.rowCount === 0) {
+        return { error: "Todo not found" };
+      }
+      return redirect("/");
     } catch (error) {
       console.error("Error deleting todo:", error);
       return { error: "Failed to delete todo" };
