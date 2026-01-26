@@ -227,9 +227,12 @@ test.describe("Accessibility Tests", () => {
 
     await test.step("Cleanup", async () => {
       const title = buildTitle("Disabled test");
-      const todoItem = page.locator("div.flex.items-center").filter({
-        hasText: title,
-      }).first();
+      const todoItem = page
+        .locator("div.flex.items-center")
+        .filter({
+          hasText: title,
+        })
+        .first();
       if ((await todoItem.count()) > 0) {
         await todoItem.getByRole("button", { name: "Delete" }).click();
       }
