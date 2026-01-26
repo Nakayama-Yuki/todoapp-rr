@@ -52,5 +52,5 @@ export async function deleteTodo(page: Page, title: string) {
   }
   
   await deleteButton.click();
-  await expect(page.getByText(title)).not.toBeVisible({ timeout: 5000 });
+  await expect(todoItem).not.toBeVisible({ timeout: 5000 });
 }
