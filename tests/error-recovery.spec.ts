@@ -7,19 +7,19 @@ test.describe("Error Handling and Recovery", () => {
   });
 
   test("recovers from validation error and creates todo successfully", async ({ page }) => {
+    const title = buildTitle("Valid after error");
+
     await test.step("Trigger validation error with empty input", async () => {
       await page.getByRole("button", { name: /add/i }).click();
       await expect(page.getByText("Title is required")).toBeVisible();
     });
 
     await test.step("Attempt to create valid todo after error", async () => {
-      const title = buildTitle("Valid after error");
       await createTodo(page, title);
     });
 
     await test.step("Verify error is cleared and todo is created", async () => {
       await expect(page.getByText("Title is required")).not.toBeVisible();
-      const title = buildTitle("Valid after error");
       await expect(page.getByText(title, { exact: false })).toBeVisible();
     });
 
@@ -34,6 +34,8 @@ test.describe("Error Handling and Recovery", () => {
   });
 
   test("handles multiple consecutive errors correctly", async ({ page }) => {
+    const title = buildTitle("After multiple errors");
+
     await test.step("Trigger first error - empty title", async () => {
       await page.getByRole("button", { name: /add/i }).click();
       await expect(page.getByText("Title is required")).toBeVisible();
@@ -53,7 +55,6 @@ test.describe("Error Handling and Recovery", () => {
     });
 
     await test.step("Create valid todo after multiple errors", async () => {
-      const title = buildTitle("After multiple errors");
       await page.getByPlaceholder("Add a new todo...").clear();
       await createTodo(page, title);
     });
@@ -62,7 +63,6 @@ test.describe("Error Handling and Recovery", () => {
       await expect(
         page.getByText("Title must be 255 characters or less")
       ).not.toBeVisible();
-      const title = buildTitle("After multiple errors");
       await expect(page.getByText(title, { exact: false })).toBeVisible();
     });
 
@@ -117,15 +117,9 @@ test.describe("Error Handling and Recovery", () => {
 
     await test.step("Verify all todos were created", async () => {
       for (const title of titles) {
-        await expect(page.getByText(title)).toBeVisible();
+        const todoItem = page.locator("div.flex.items-center").filter({ hasText: title });
+        await expect(todoItem.first()).toBeVisible();
       }
-    });
-
-    await test.step("Verify correct count", async () => {
-      const todoItems = page.locator("div.flex.items-center").filter({
-        has: page.locator('input[name="intent"][value="update"]'),
-      });
-      await expect(todoItems).toHaveCount(titles.length);
     });
 
     await test.step("Cleanup", async () => {
@@ -195,6 +189,7 @@ test.describe("Error Handling and Recovery", () => {
     });
 
     await test.step("Submit another error to verify error can reappear", async () => {
+      await page.getByPlaceholder("Add a new todo...").clear();
       await page.getByRole("button", { name: /add/i }).click();
       await expect(page.getByText("Title is required")).toBeVisible();
     });

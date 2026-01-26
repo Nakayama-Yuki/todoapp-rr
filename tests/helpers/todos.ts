@@ -12,13 +12,17 @@ export async function clearAllTodos(page: Page) {
   await gotoHome(page);
   
   // Delete all existing todos one by one
-  const deleteButtons = page.getByRole("button", { name: "Delete" });
-  let count = await deleteButtons.count();
-  
-  while (count > 0) {
-    await deleteButtons.first().click();
-    await page.waitForTimeout(100); // Small delay for DOM update
-    count = await deleteButtons.count();
+  while (true) {
+    const deleteButtons = page.getByRole("button", { name: "Delete" });
+    const count = await deleteButtons.count();
+    
+    if (count === 0) {
+      break;
+    }
+    
+    await deleteButtons.first().click({ force: true });
+    // Wait for navigation to complete after deletion
+    await page.waitForLoadState("networkidle");
   }
 }
 
@@ -51,6 +55,6 @@ export async function deleteTodo(page: Page, title: string) {
     return; // Todo already deleted or doesn't exist
   }
   
-  await deleteButton.click();
+  await deleteButton.click({ force: true });
   await expect(todoItem).not.toBeVisible({ timeout: 5000 });
 }
