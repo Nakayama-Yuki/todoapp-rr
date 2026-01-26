@@ -4,7 +4,6 @@ import {
   clearAllTodos,
   createTodo,
   deleteTodo,
-  gotoHome,
 } from "./helpers/todos";
 
 test("deletes a todo from the list", async ({ page }) => {

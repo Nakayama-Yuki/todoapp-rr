@@ -5,7 +5,6 @@ import {
   createTodo,
   deleteTodo,
   getTodoItem,
-  gotoHome,
   toggleTodo,
 } from "./helpers/todos";
 

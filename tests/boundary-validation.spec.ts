@@ -3,8 +3,7 @@ import {
   buildTitle,
   clearAllTodos,
   createTodo,
-  deleteTodo,
-  gotoHome,
+  deleteTodo,  
 } from "./helpers/todos";
 
 test.describe("Form Input Boundary Tests", () => {

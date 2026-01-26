@@ -4,7 +4,6 @@ import {
   clearAllTodos,
   createTodo,
   deleteTodo,
-  gotoHome,
 } from "./helpers/todos";
 
 test("persists created todos after reload", async ({ page }) => {
