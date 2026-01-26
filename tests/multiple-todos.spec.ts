@@ -21,7 +21,6 @@ test.describe("Multiple Todos Management", () => {
       buildTitle("Third todo"),
     ];
 
-
     await test.step("Create multiple todos", async () => {
       for (const title of titles) {
         await createTodo(page, title);
@@ -55,7 +54,6 @@ test.describe("Multiple Todos Management", () => {
       buildTitle("Keep 2"),
     ];
 
-
     await test.step("Create multiple todos", async () => {
       for (const title of titles) {
         await createTodo(page, title);
@@ -88,7 +86,6 @@ test.describe("Multiple Todos Management", () => {
       buildTitle("Todo 3"),
     ];
 
-
     await test.step("Create multiple todos", async () => {
       for (const title of titles) {
         await createTodo(page, title);
@@ -97,25 +94,35 @@ test.describe("Multiple Todos Management", () => {
 
     await test.step("Toggle first todo to completed", async () => {
       const todoItem = await toggleTodo(page, titles[0]);
-      await expect(todoItem.getByRole("button").first()).toHaveClass(/bg-green-600/);
+      await expect(todoItem.getByRole("button").first()).toHaveClass(
+        /bg-green-600/,
+      );
     });
 
     await test.step("Verify other todos remain uncompleted", async () => {
       const todo2 = getTodoItem(page, titles[1]);
-      await expect(todo2.getByRole("button").first()).not.toHaveClass(/bg-green-600/);
+      await expect(todo2.getByRole("button").first()).not.toHaveClass(
+        /bg-green-600/,
+      );
 
       const todo3 = getTodoItem(page, titles[2]);
-      await expect(todo3.getByRole("button").first()).not.toHaveClass(/bg-green-600/);
+      await expect(todo3.getByRole("button").first()).not.toHaveClass(
+        /bg-green-600/,
+      );
     });
 
     await test.step("Toggle third todo to completed", async () => {
       const todoItem = await toggleTodo(page, titles[2]);
-      await expect(todoItem.getByRole("button").first()).toHaveClass(/bg-green-600/);
+      await expect(todoItem.getByRole("button").first()).toHaveClass(
+        /bg-green-600/,
+      );
     });
 
     await test.step("Verify middle todo still uncompleted", async () => {
       const todo2 = getTodoItem(page, titles[1]);
-      await expect(todo2.getByRole("button").first()).not.toHaveClass(/bg-green-600/);
+      await expect(todo2.getByRole("button").first()).not.toHaveClass(
+        /bg-green-600/,
+      );
     });
 
     await test.step("Cleanup", async () => {
@@ -131,7 +138,6 @@ test.describe("Multiple Todos Management", () => {
       buildTitle("Second created"),
       buildTitle("Third created"),
     ];
-
 
     await test.step("Create todos sequentially with delay", async () => {
       for (const title of titles) {

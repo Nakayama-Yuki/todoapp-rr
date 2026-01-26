@@ -1,5 +1,11 @@
 import { expect, test } from "@playwright/test";
-import { buildTitle, clearAllTodos, createTodo, deleteTodo, gotoHome } from "./helpers/todos";
+import {
+  buildTitle,
+  clearAllTodos,
+  createTodo,
+  deleteTodo,
+  gotoHome,
+} from "./helpers/todos";
 
 test.describe("Empty State", () => {
   test.beforeEach(async ({ page }) => {
@@ -9,7 +15,7 @@ test.describe("Empty State", () => {
   test("displays empty state message when no todos exist", async ({ page }) => {
     await test.step("Verify empty state message is displayed", async () => {
       await expect(
-        page.getByText("No todos yet. Create one to get started!")
+        page.getByText("No todos yet. Create one to get started!"),
       ).toBeVisible();
     });
   });
@@ -19,7 +25,7 @@ test.describe("Empty State", () => {
 
     await test.step("Verify initial empty state", async () => {
       await expect(
-        page.getByText("No todos yet. Create one to get started!")
+        page.getByText("No todos yet. Create one to get started!"),
       ).toBeVisible();
     });
 
@@ -29,7 +35,7 @@ test.describe("Empty State", () => {
 
     await test.step("Verify empty state message is hidden", async () => {
       await expect(
-        page.getByText("No todos yet. Create one to get started!")
+        page.getByText("No todos yet. Create one to get started!"),
       ).not.toBeVisible();
     });
 
@@ -55,7 +61,7 @@ test.describe("Empty State", () => {
 
     await test.step("Verify empty state message appears again", async () => {
       await expect(
-        page.getByText("No todos yet. Create one to get started!")
+        page.getByText("No todos yet. Create one to get started!"),
       ).toBeVisible();
     });
   });
