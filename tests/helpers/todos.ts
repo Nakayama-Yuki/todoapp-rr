@@ -13,14 +13,20 @@ export async function clearAllTodos(page: Page) {
   
   // Delete all existing todos one by one
   while (true) {
-    const deleteButtons = page.getByRole("button", { name: "Delete" });
-    const count = await deleteButtons.count();
+    const todoItems = page.locator("div.flex.items-center").filter({
+      has: page.locator('input[name="intent"][value="update"]'),
+    });
+    const count = await todoItems.count();
     
     if (count === 0) {
       break;
     }
     
-    await deleteButtons.first().click({ force: true });
+    // Hover over the first todo to make delete button visible
+    const firstTodo = todoItems.first();
+    await firstTodo.hover();
+    const deleteButton = firstTodo.getByRole("button", { name: "Delete" });
+    await deleteButton.click();
     // Wait for navigation to complete after deletion
     await page.waitForLoadState("networkidle");
   }
@@ -47,7 +53,6 @@ export async function toggleTodo(page: Page, title: string) {
 
 export async function deleteTodo(page: Page, title: string) {
   const todoItem = page.locator("div.flex.items-center").filter({ hasText: title }).first();
-  const deleteButton = todoItem.getByRole("button", { name: "Delete" });
   
   // Check if the todo item exists before trying to delete
   const count = await todoItem.count();
@@ -55,6 +60,9 @@ export async function deleteTodo(page: Page, title: string) {
     return; // Todo already deleted or doesn't exist
   }
   
-  await deleteButton.click({ force: true });
+  // Hover over the todo item to make delete button visible
+  await todoItem.hover();
+  const deleteButton = todoItem.getByRole("button", { name: "Delete" });
+  await deleteButton.click();
   await expect(todoItem).not.toBeVisible({ timeout: 5000 });
 }
