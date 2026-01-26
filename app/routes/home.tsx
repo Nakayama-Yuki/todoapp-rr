@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { Form, useActionData, useNavigation } from "react-router";
 import type { Route } from "./+types/home";
 
@@ -16,6 +17,18 @@ export default function TodosPage({ loaderData }: Route.ComponentProps) {
   const actionData = useActionData();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
+  const formRef = useRef<HTMLFormElement>(null);
+  const wasSubmittingRef = useRef(false);
+
+  // Clear form after successful submission
+  useEffect(() => {
+    if (wasSubmittingRef.current && navigation.state === "idle" && !actionData?.error && formRef.current) {
+      formRef.current.reset();
+      wasSubmittingRef.current = false;
+    } else if (navigation.state === "submitting") {
+      wasSubmittingRef.current = true;
+    }
+  }, [navigation.state, actionData]);
 
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-900 to-slate-800 p-8">
@@ -30,7 +43,7 @@ export default function TodosPage({ loaderData }: Route.ComponentProps) {
         )}
 
         {/* Create form */}
-        <Form method="post" className="mb-8">
+        <Form method="post" className="mb-8" ref={formRef}>
           <div className="flex gap-2">
             <input type="hidden" name="intent" value="create" />
             <input

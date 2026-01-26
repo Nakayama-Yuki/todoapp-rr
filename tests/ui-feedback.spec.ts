@@ -100,6 +100,7 @@ test.describe("UI State and User Feedback", () => {
   });
 
   test("displays error message and allows retry", async ({ page }) => {
+    const title = buildTitle("After error");
 
     await test.step("Submit empty form to trigger error", async () => {
       await page.getByRole("button", { name: /add/i }).click();
@@ -110,7 +111,6 @@ test.describe("UI State and User Feedback", () => {
     });
 
     await test.step("Retry with valid input", async () => {
-      const title = buildTitle("After error");
       await createTodo(page, title);
     });
 
@@ -119,20 +119,11 @@ test.describe("UI State and User Feedback", () => {
     });
 
     await test.step("Verify successful creation", async () => {
-      const title = buildTitle("After error");
       await expect(page.getByText(title, { exact: false })).toBeVisible();
     });
 
     await test.step("Cleanup", async () => {
-      const title = buildTitle("After error");
-      // Find any todo containing this pattern for cleanup
-      const todoItem = page.locator("div.flex.items-center").filter({
-        hasText: "After error",
-      }).first();
-      
-      if (await todoItem.count() > 0) {
-        await todoItem.getByRole("button", { name: "Delete" }).click();
-      }
+      await deleteTodo(page, title);
     });
   });
 
