@@ -26,7 +26,9 @@ test.describe("UI State and User Feedback", () => {
       // Check for "Adding..." text during submission
       // Note: This might be very fast, so we check immediately
       const addingButton = page.getByRole("button", { name: "Adding..." });
-      const _isAddingVisible = await addingButton.isVisible().catch(() => false);
+      const _isAddingVisible = await addingButton
+        .isVisible()
+        .catch(() => false);
 
       await submitPromise;
 
