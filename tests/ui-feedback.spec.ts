@@ -1,28 +1,35 @@
 import { expect, test } from "@playwright/test";
-import { buildTitle, clearAllTodos, createTodo, deleteTodo, gotoHome } from "./helpers/todos";
+import {
+  buildTitle,
+  clearAllTodos,
+  createTodo,
+  deleteTodo,
+  gotoHome,
+} from "./helpers/todos";
 
 test.describe("UI State and User Feedback", () => {
   test.beforeEach(async ({ page }) => {
     await clearAllTodos(page);
   });
 
-  test("displays 'Adding...' state during form submission", async ({ page }) => {
+  test("displays 'Adding...' state during form submission", async ({
+    page,
+  }) => {
     const title = buildTitle("Test submission state");
-
 
     await test.step("Fill form and check button state", async () => {
       await page.getByPlaceholder("Add a new todo...").fill(title);
-      
+
       // Start submission
       const submitPromise = page.getByRole("button", { name: /add/i }).click();
-      
+
       // Check for "Adding..." text during submission
       // Note: This might be very fast, so we check immediately
       const addingButton = page.getByRole("button", { name: "Adding..." });
-      const isAddingVisible = await addingButton.isVisible().catch(() => false);
-      
+      const _isAddingVisible = await addingButton.isVisible().catch(() => false);
+
       await submitPromise;
-      
+
       // After submission completes, button should be back to "Add"
       await expect(page.getByRole("button", { name: /^Add$/i })).toBeVisible();
     });
@@ -39,7 +46,6 @@ test.describe("UI State and User Feedback", () => {
   test("disables input field during form submission", async ({ page }) => {
     const title = buildTitle("Test input disable");
 
-
     await test.step("Check input is initially enabled", async () => {
       const input = page.getByPlaceholder("Add a new todo...");
       await expect(input).toBeEnabled();
@@ -48,7 +54,7 @@ test.describe("UI State and User Feedback", () => {
     await test.step("Submit and verify input state", async () => {
       await page.getByPlaceholder("Add a new todo...").fill(title);
       await page.getByRole("button", { name: /add/i }).click();
-      
+
       // After submission, input should be enabled again
       await page.waitForTimeout(100);
       const input = page.getByPlaceholder("Add a new todo...");
@@ -63,33 +69,40 @@ test.describe("UI State and User Feedback", () => {
   test("displays checkmark icon when todo is completed", async ({ page }) => {
     const title = buildTitle("Test checkmark");
 
-
     await test.step("Create todo", async () => {
       await createTodo(page, title);
     });
 
     await test.step("Toggle todo to completed", async () => {
-      const todoItem = page.locator("div.flex.items-center", { hasText: title }).first();
+      const todoItem = page
+        .locator("div.flex.items-center", { hasText: title })
+        .first();
       await todoItem.getByRole("button").first().click();
     });
 
     await test.step("Verify checkmark icon is displayed", async () => {
-      const todoItem = page.locator("div.flex.items-center", { hasText: title }).first();
+      const todoItem = page
+        .locator("div.flex.items-center", { hasText: title })
+        .first();
       const checkmarkSvg = todoItem.locator("svg");
       await expect(checkmarkSvg).toBeVisible();
-      
+
       // Verify the button has the completed style
       const toggleButton = todoItem.getByRole("button").first();
       await expect(toggleButton).toHaveClass(/bg-green-600/);
     });
 
     await test.step("Toggle back to uncompleted", async () => {
-      const todoItem = page.locator("div.flex.items-center", { hasText: title }).first();
+      const todoItem = page
+        .locator("div.flex.items-center", { hasText: title })
+        .first();
       await todoItem.getByRole("button").first().click();
     });
 
     await test.step("Verify checkmark is hidden", async () => {
-      const todoItem = page.locator("div.flex.items-center", { hasText: title }).first();
+      const todoItem = page
+        .locator("div.flex.items-center", { hasText: title })
+        .first();
       const toggleButton = todoItem.getByRole("button").first();
       await expect(toggleButton).not.toHaveClass(/bg-green-600/);
     });
@@ -130,7 +143,6 @@ test.describe("UI State and User Feedback", () => {
   test("clears input field after successful submission", async ({ page }) => {
     const title = buildTitle("Test input clear");
 
-
     await test.step("Fill and submit form", async () => {
       const input = page.getByPlaceholder("Add a new todo...");
       await input.fill(title);
@@ -157,14 +169,18 @@ test.describe("UI State and User Feedback", () => {
     await createTodo(page, title);
 
     await test.step("Hover over todo item", async () => {
-      const todoItem = page.locator("div.flex.items-center", { hasText: title }).first();
+      const todoItem = page
+        .locator("div.flex.items-center", { hasText: title })
+        .first();
       await todoItem.hover();
     });
 
     await test.step("Verify delete button becomes visible", async () => {
-      const todoItem = page.locator("div.flex.items-center", { hasText: title }).first();
+      const todoItem = page
+        .locator("div.flex.items-center", { hasText: title })
+        .first();
       const deleteButton = todoItem.getByRole("button", { name: "Delete" });
-      
+
       // The button should be visible (opacity may change on hover)
       await expect(deleteButton).toBeVisible();
     });
@@ -180,24 +196,32 @@ test.describe("UI State and User Feedback", () => {
     await createTodo(page, title);
 
     await test.step("Toggle todo to completed", async () => {
-      const todoItem = page.locator("div.flex.items-center", { hasText: title }).first();
+      const todoItem = page
+        .locator("div.flex.items-center", { hasText: title })
+        .first();
       await todoItem.getByRole("button").first().click();
     });
 
     await test.step("Verify line-through style is applied", async () => {
-      const todoItem = page.locator("div.flex.items-center", { hasText: title }).first();
+      const todoItem = page
+        .locator("div.flex.items-center", { hasText: title })
+        .first();
       const titleSpan = todoItem.locator("span", { hasText: title });
       await expect(titleSpan).toHaveClass(/line-through/);
       await expect(titleSpan).toHaveClass(/text-slate-400/);
     });
 
     await test.step("Toggle back to uncompleted", async () => {
-      const todoItem = page.locator("div.flex.items-center", { hasText: title }).first();
+      const todoItem = page
+        .locator("div.flex.items-center", { hasText: title })
+        .first();
       await todoItem.getByRole("button").first().click();
     });
 
     await test.step("Verify line-through style is removed", async () => {
-      const todoItem = page.locator("div.flex.items-center", { hasText: title }).first();
+      const todoItem = page
+        .locator("div.flex.items-center", { hasText: title })
+        .first();
       const titleSpan = todoItem.locator("span", { hasText: title });
       await expect(titleSpan).not.toHaveClass(/line-through/);
       await expect(titleSpan).toHaveClass(/text-white/);

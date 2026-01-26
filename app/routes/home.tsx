@@ -22,7 +22,12 @@ export default function TodosPage({ loaderData }: Route.ComponentProps) {
 
   // Clear form after successful submission
   useEffect(() => {
-    if (wasSubmittingRef.current && navigation.state === "idle" && !actionData?.error && formRef.current) {
+    if (
+      wasSubmittingRef.current &&
+      navigation.state === "idle" &&
+      !actionData?.error &&
+      formRef.current
+    ) {
       formRef.current.reset();
       wasSubmittingRef.current = false;
     } else if (navigation.state === "submitting") {

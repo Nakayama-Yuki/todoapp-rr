@@ -1,12 +1,20 @@
 import { expect, test } from "@playwright/test";
-import { buildTitle, clearAllTodos, createTodo, deleteTodo, gotoHome } from "./helpers/todos";
+import {
+  buildTitle,
+  clearAllTodos,
+  createTodo,
+  deleteTodo,
+  gotoHome,
+} from "./helpers/todos";
 
 test.describe("Error Handling and Recovery", () => {
   test.beforeEach(async ({ page }) => {
     await clearAllTodos(page);
   });
 
-  test("recovers from validation error and creates todo successfully", async ({ page }) => {
+  test("recovers from validation error and creates todo successfully", async ({
+    page,
+  }) => {
     const title = buildTitle("Valid after error");
 
     await test.step("Trigger validation error with empty input", async () => {
@@ -24,10 +32,13 @@ test.describe("Error Handling and Recovery", () => {
     });
 
     await test.step("Cleanup", async () => {
-      const todoItem = page.locator("div.flex.items-center").filter({
-        hasText: "Valid after error",
-      }).first();
-      if (await todoItem.count() > 0) {
+      const todoItem = page
+        .locator("div.flex.items-center")
+        .filter({
+          hasText: "Valid after error",
+        })
+        .first();
+      if ((await todoItem.count()) > 0) {
         await todoItem.getByRole("button", { name: "Delete" }).click();
       }
     });
@@ -50,7 +61,7 @@ test.describe("Error Handling and Recovery", () => {
     await test.step("Verify error message changed", async () => {
       await expect(page.getByText("Title is required")).not.toBeVisible();
       await expect(
-        page.getByText("Title must be 255 characters or less")
+        page.getByText("Title must be 255 characters or less"),
       ).toBeVisible();
     });
 
@@ -61,16 +72,19 @@ test.describe("Error Handling and Recovery", () => {
 
     await test.step("Verify all errors cleared and todo created", async () => {
       await expect(
-        page.getByText("Title must be 255 characters or less")
+        page.getByText("Title must be 255 characters or less"),
       ).not.toBeVisible();
       await expect(page.getByText(title, { exact: false })).toBeVisible();
     });
 
     await test.step("Cleanup", async () => {
-      const todoItem = page.locator("div.flex.items-center").filter({
-        hasText: "After multiple errors",
-      }).first();
-      if (await todoItem.count() > 0) {
+      const todoItem = page
+        .locator("div.flex.items-center")
+        .filter({
+          hasText: "After multiple errors",
+        })
+        .first();
+      if ((await todoItem.count()) > 0) {
         await todoItem.getByRole("button", { name: "Delete" }).click();
       }
     });
@@ -117,7 +131,9 @@ test.describe("Error Handling and Recovery", () => {
 
     await test.step("Verify all todos were created", async () => {
       for (const title of titles) {
-        const todoItem = page.locator("div.flex.items-center").filter({ hasText: title });
+        const todoItem = page
+          .locator("div.flex.items-center")
+          .filter({ hasText: title });
         await expect(todoItem.first()).toBeVisible();
       }
     });
@@ -135,7 +151,9 @@ test.describe("Error Handling and Recovery", () => {
     await createTodo(page, title);
 
     await test.step("Toggle todo completion", async () => {
-      const todoItem = page.locator("div.flex.items-center", { hasText: title }).first();
+      const todoItem = page
+        .locator("div.flex.items-center", { hasText: title })
+        .first();
       await todoItem.getByRole("button").first().click();
     });
 
@@ -144,12 +162,16 @@ test.describe("Error Handling and Recovery", () => {
     });
 
     await test.step("Verify todo can be toggled again", async () => {
-      const todoItem = page.locator("div.flex.items-center", { hasText: title }).first();
+      const todoItem = page
+        .locator("div.flex.items-center", { hasText: title })
+        .first();
       await todoItem.getByRole("button").first().click();
     });
 
     await test.step("Verify final state", async () => {
-      const todoItem = page.locator("div.flex.items-center", { hasText: title }).first();
+      const todoItem = page
+        .locator("div.flex.items-center", { hasText: title })
+        .first();
       await expect(todoItem).toBeVisible();
     });
 
@@ -158,7 +180,9 @@ test.describe("Error Handling and Recovery", () => {
     });
   });
 
-  test("maintains form state when navigating away and back", async ({ page }) => {
+  test("maintains form state when navigating away and back", async ({
+    page,
+  }) => {
     await test.step("Fill form but don't submit", async () => {
       await page.getByPlaceholder("Add a new todo...").fill("Unsaved todo");
     });
@@ -173,7 +197,9 @@ test.describe("Error Handling and Recovery", () => {
     });
   });
 
-  test("error message disappears after successful submission", async ({ page }) => {
+  test("error message disappears after successful submission", async ({
+    page,
+  }) => {
     await test.step("Create error state", async () => {
       await page.getByRole("button", { name: /add/i }).click();
       await expect(page.getByText("Title is required")).toBeVisible();
@@ -195,10 +221,13 @@ test.describe("Error Handling and Recovery", () => {
     });
 
     await test.step("Cleanup", async () => {
-      const todoItem = page.locator("div.flex.items-center").filter({
-        hasText: "Clear error",
-      }).first();
-      if (await todoItem.count() > 0) {
+      const todoItem = page
+        .locator("div.flex.items-center")
+        .filter({
+          hasText: "Clear error",
+        })
+        .first();
+      if ((await todoItem.count()) > 0) {
         await todoItem.getByRole("button", { name: "Delete" }).click();
       }
     });

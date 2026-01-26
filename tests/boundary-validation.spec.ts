@@ -1,12 +1,20 @@
 import { expect, test } from "@playwright/test";
-import { buildTitle, clearAllTodos, createTodo, deleteTodo, gotoHome } from "./helpers/todos";
+import {
+  buildTitle,
+  clearAllTodos,
+  createTodo,
+  deleteTodo,
+  gotoHome,
+} from "./helpers/todos";
 
 test.describe("Form Input Boundary Tests", () => {
   test.beforeEach(async ({ page }) => {
     await clearAllTodos(page);
   });
 
-  test("successfully creates a todo with exactly 255 characters", async ({ page }) => {
+  test("successfully creates a todo with exactly 255 characters", async ({
+    page,
+  }) => {
     const exactTitle = "x".repeat(255);
 
     await test.step("Fill and submit form with 255 character title", async () => {
@@ -33,7 +41,7 @@ test.describe("Form Input Boundary Tests", () => {
 
     await test.step("Verify error message is displayed", async () => {
       await expect(
-        page.getByText("Title must be 255 characters or less")
+        page.getByText("Title must be 255 characters or less"),
       ).toBeVisible();
     });
 
@@ -42,7 +50,9 @@ test.describe("Form Input Boundary Tests", () => {
     });
   });
 
-  test("successfully creates a todo with 1 character (minimum boundary)", async ({ page }) => {
+  test("successfully creates a todo with 1 character (minimum boundary)", async ({
+    page,
+  }) => {
     const minTitle = "a";
 
     await test.step("Create todo with single character", async () => {
@@ -50,7 +60,9 @@ test.describe("Form Input Boundary Tests", () => {
     });
 
     await test.step("Verify todo was created", async () => {
-      const todoItem = page.locator("div.flex.items-center").filter({ hasText: minTitle });
+      const todoItem = page
+        .locator("div.flex.items-center")
+        .filter({ hasText: minTitle });
       await expect(todoItem).toBeVisible();
     });
 
@@ -81,7 +93,9 @@ test.describe("Form Input Boundary Tests", () => {
 
     await test.step("Verify todo is created and displayed", async () => {
       // Server normalizes multiple whitespace chars (including newlines) to single space
-      const todoItem = page.locator("div.flex.items-center").filter({ hasText: normalizedTitle });
+      const todoItem = page
+        .locator("div.flex.items-center")
+        .filter({ hasText: normalizedTitle });
       await expect(todoItem).toBeVisible();
     });
 
@@ -93,7 +107,6 @@ test.describe("Form Input Boundary Tests", () => {
 
   test("handles title with special characters", async ({ page }) => {
     const specialTitle = buildTitle("Test @#$%^&*()_+-=[]{}|;':\"<>?,./");
-
 
     await test.step("Create todo with special characters", async () => {
       await createTodo(page, specialTitle);
@@ -123,19 +136,26 @@ test.describe("Form Input Boundary Tests", () => {
 
     await test.step("Verify todo exists (with or without trim)", async () => {
       // Check if either trimmed or untrimmed version exists
-      const hasTrimmedVersion = await page.getByText(trimmedTitle, { exact: false }).isVisible();
-      const hasUntrimmedVersion = await page.getByText(titleWithSpaces, { exact: false }).isVisible();
-      
+      const hasTrimmedVersion = await page
+        .getByText(trimmedTitle, { exact: false })
+        .isVisible();
+      const hasUntrimmedVersion = await page
+        .getByText(titleWithSpaces, { exact: false })
+        .isVisible();
+
       expect(hasTrimmedVersion || hasUntrimmedVersion).toBeTruthy();
     });
 
     await test.step("Cleanup", async () => {
       // Try both versions for cleanup
-      const todoItem = page.locator("div.flex.items-center").filter({
-        hasText: trimmedTitle,
-      }).first();
-      
-      if (await todoItem.count() > 0) {
+      const todoItem = page
+        .locator("div.flex.items-center")
+        .filter({
+          hasText: trimmedTitle,
+        })
+        .first();
+
+      if ((await todoItem.count()) > 0) {
         await todoItem.getByRole("button", { name: "Delete" }).click();
         await page.waitForTimeout(300);
       }
