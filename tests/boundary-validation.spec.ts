@@ -50,7 +50,8 @@ test.describe("Form Input Boundary Tests", () => {
     });
 
     await test.step("Verify todo was created", async () => {
-      await expect(page.getByText(minTitle)).toBeVisible();
+      const todoItem = page.locator("div.flex.items-center").filter({ hasText: minTitle });
+      await expect(todoItem).toBeVisible();
     });
 
     await test.step("Cleanup", async () => {
@@ -71,6 +72,7 @@ test.describe("Form Input Boundary Tests", () => {
 
   test("handles title with newlines and spaces", async ({ page }) => {
     const titleWithNewlines = "Todo\nwith\nnewlines";
+    const normalizedTitle = "Todo with newlines"; // Normalized: newlines -> single space
 
     await test.step("Create todo with newlines", async () => {
       await page.getByPlaceholder("Add a new todo...").fill(titleWithNewlines);
@@ -78,20 +80,14 @@ test.describe("Form Input Boundary Tests", () => {
     });
 
     await test.step("Verify todo is created and displayed", async () => {
-      // The browser will likely convert newlines to spaces in the input
-      // Check if the todo was created (exact display may vary)
-      const todoExists = await page.locator("div.flex.items-center").filter({
-        hasText: /Todo.*with.*newlines/,
-      }).count();
-      expect(todoExists).toBeGreaterThan(0);
+      // Server normalizes multiple whitespace chars (including newlines) to single space
+      const todoItem = page.locator("div.flex.items-center").filter({ hasText: normalizedTitle });
+      await expect(todoItem).toBeVisible();
     });
 
     await test.step("Cleanup", async () => {
-      // Find and delete the created todo
-      const todoItem = page.locator("div.flex.items-center").filter({
-        hasText: /Todo.*with.*newlines/,
-      }).first();
-      await todoItem.getByRole("button", { name: "Delete" }).click();
+      // Delete using the normalized title
+      await deleteTodo(page, normalizedTitle);
     });
   });
 
