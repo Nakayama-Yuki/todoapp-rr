@@ -213,17 +213,5 @@ pnpm run dev:down
 - Tailwind purges unused styles at build time
 - React Router enables SSR by default in `react-router.config.ts`
 
-## Related Documentation Files
-
-- **React Best Practices**: `.github/skills/react-best-practices/AGENTS.md` (40+ performance rules)
-- **Instructions by File Type**:
-  - Docker: `.github/instructions/docker.instructions.md`
-  - GitHub Actions: `.github/instructions/github-actions.instructions.md`
-  - React Router: `.github/instructions/react-router.instructions.md`
-  - ReactJS: `.github/instructions/reactjs.instructions.md`
-  - TypeScript: `.github/instructions/typescript.instructions.md`
-
----
-
 **Last Updated**: January 2026  
 **Next Review**: When adding new layers (auth, caching, API routes, etc.)
