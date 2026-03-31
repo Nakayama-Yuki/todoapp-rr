@@ -106,7 +106,7 @@ jobs:
 
       # ステップ11: Playwright テストレポートをアップロード（テストが失敗しても実行）
       - name: Upload Playwright Report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:
           name: playwright-report
