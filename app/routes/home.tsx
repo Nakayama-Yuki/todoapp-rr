@@ -1,5 +1,11 @@
 import { useEffect, useRef } from "react";
-import { Form, useActionData, useNavigation } from "react-router";
+import {
+  Form,
+  isRouteErrorResponse,
+  useActionData,
+  useNavigation,
+  useRouteError,
+} from "react-router";
 import type { Route } from "./+types/home";
 
 export { action } from "../components/home.action";
@@ -138,6 +144,53 @@ export default function TodosPage({ loaderData }: Route.ComponentProps) {
             ))
           )}
         </div>
+      </div>
+    </div>
+  );
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+
+  if (isRouteErrorResponse(error)) {
+    return (
+      <div className="min-h-screen bg-linear-to-br from-slate-900 to-slate-800 p-8 flex items-center justify-center">
+        <div className="max-w-2xl mx-auto text-center">
+          <h1 className="text-6xl font-bold text-red-500 mb-4">
+            {error.status}
+          </h1>
+          <p className="text-xl text-slate-300 mb-4">{error.statusText}</p>
+          {error.data && (
+            <p className="text-slate-400">{String(error.data)}</p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  if (error instanceof Error) {
+    return (
+      <div className="min-h-screen bg-linear-to-br from-slate-900 to-slate-800 p-8 flex items-center justify-center">
+        <div className="max-w-2xl mx-auto">
+          <h1 className="text-4xl font-bold text-red-500 mb-4">Error</h1>
+          <p className="text-slate-300 mb-4">{error.message}</p>
+          {import.meta.env.DEV && (
+            <pre className="bg-slate-800 p-4 rounded-lg text-slate-200 text-sm overflow-auto">
+              {error.stack}
+            </pre>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-linear-to-br from-slate-900 to-slate-800 p-8 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-4xl font-bold text-red-500">Unknown Error</h1>
+        <p className="text-slate-400 mt-4">
+          An unexpected error occurred. Please try again.
+        </p>
       </div>
     </div>
   );
