@@ -160,9 +160,7 @@ export function ErrorBoundary() {
             {error.status}
           </h1>
           <p className="text-xl text-slate-300 mb-4">{error.statusText}</p>
-          {error.data && (
-            <p className="text-slate-400">{String(error.data)}</p>
-          )}
+          {error.data && <p className="text-slate-400">{String(error.data)}</p>}
         </div>
       </div>
     );
