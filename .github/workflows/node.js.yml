@@ -62,7 +62,7 @@ jobs:
 
       # ステップ3: LTSのNode.jsをセットアップ
       - name: Use Node.js LTS
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: lts/*
           cache: "pnpm" # pnpmのキャッシュを有効化
