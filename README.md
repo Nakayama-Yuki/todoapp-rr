@@ -1,245 +1,112 @@
-# React Router + PostgreSQL Todoアプリ
+# React Router + PostgreSQL Todo アプリ
 
-このプロジェクトは、React Router v7とPostgreSQLを使用したフルスタックTodoアプリケーションです。
+React Router v8 の SSR、React、TypeScript、Zod、Tailwind CSS v4、PostgreSQL 17 を使う Todo アプリです。追加・編集・削除・完了切替と DB への永続化に対応します。依存バージョンと全スクリプトは [package.json](package.json) を参照してください。
 
-## 技術スタック
+## 前提
 
-- **フロントエンド**: React 19 + React Router v7 + TypeScript 5
-- **バックエンド**: Node.js + React Router Server Actions
-- **データベース**: PostgreSQL 17 (Docker)
-- **ORM/DB**: node-postgres (pg)
-- **バリデーション**: Zod
-- **スタイリング**: Tailwind CSS v4
-- **パッケージマネージャー**: pnpm
-- **ビルドツール**: Vite
+Node.js LTS、pnpm、PostgreSQL 17 を用意します。付属 Docker スクリプトは `docker-compose` コマンドを使用します。`docker compose` を使う環境では対応するファイルを指定して実行してください。
 
-## セットアップ手順
-
-### 1. 依存関係のインストール
+## セットアップ
 
 ```bash
+git clone https://github.com/Nakayama-Yuki/todoapp-rr.git
+cd todoapp-rr
 pnpm install
+cp .env.example .env
 ```
 
-### 2. 環境変数の設定（ローカル開発の場合）
+`.env` に次の DB 接続情報を設定します。`app/db/index.ts` は `dotenv/config` で `.env` を読み込み、以下の5変数を検証します。`.env.local` の自動読込はありません。
 
-Docker なしでローカル開発する場合は `.env.local` を作成：
+| 変数 | ローカルでの例 |
+| --- | --- |
+| `DATABASE_HOST` | `localhost` |
+| `DATABASE_PORT` | `5432` |
+| `DATABASE_USER` | `todouser` |
+| `DATABASE_PASSWORD` | ローカルDBのパスワード |
+| `DATABASE_NAME` | `todoapp` |
 
-```bash
-cp .env.local.example .env.local
+Docker Compose で DB を起動する場合は、現在の `.env.example` にない `POSTGRES_*` も `.env` に追記します。アプリ側の `DATABASE_*` と同じ DB名・ユーザー・パスワードを設定してください。
+
+```dotenv
+POSTGRES_DB=todoapp
+POSTGRES_USER=todouser
+POSTGRES_PASSWORD=replace-with-your-local-db-password
 ```
 
-デフォルトの `.env` はすべての環境で共通です。
-
-### 3. Docker コンテナの起動
+`.env` は Git 除外です。値を設定したら DB とアプリを起動します。
 
 ```bash
-# 開発環境: PostgreSQL（DB）のみDockerで起動
-pnpm run docker:dev
-
-# アプリはローカルで起動（ホットリロード）
+pnpm docker:dev
 pnpm dev
 ```
 
-アプリケーションが `http://localhost:5173` で起動します。
+画面は http://localhost:5173 です。ローカルの PostgreSQL を利用する場合は DB の Docker 起動は不要です。スキーマは `init.sql` を対象 DB に適用してください。Compose で空のボリュームを作成した場合は自動適用されます。
 
-### 4. 本番環境の起動
+## ルーティングとデータ処理
 
-```bash
-# Next.js と PostgreSQL をDockerで起動
-# （.env の NODE_ENV などを production に変更して実行）
-pnpm run docker:prod
-```
+画面は `/` のみで、[app/routes.ts](app/routes.ts) に登録されています。`/todos` や `/todos/[id]` の REST API はありません。
 
-アプリが `http://localhost:3000` で起動します。
+- `app/routes/home.tsx`：画面と React Router の `Form`。
+- `app/components/home.loader.ts`：初期データ取得。
+- `app/components/home.action.ts`：POST の `FormData` にある `intent` で作成・更新・削除を分岐。
+- `app/schemas/todo.ts`：Zod バリデーション。
+- `app/db/index.ts`：パラメータ化クエリと接続プール。
 
-## Docker コマンド一覧
+成功時は `/` へリダイレクトし、失敗時は action のエラーを表示します。
 
-```bash
-# 開発環境: PostgreSQL のみ起動
-pnpm run docker:dev
-
-# 本番環境: Next.js + PostgreSQL 起動
-pnpm run docker:prod
-
-# サービスのログを確認
-pnpm run docker:logs       # 開発（DB のみ）
-pnpm run prod:logs         # 本番（アプリ + DB）
-
-# PostgreSQL コンテナのみ起動
-pnpm run postgres:up
-
-# PostgreSQL のログを表示
-pnpm run postgres:logs
-
-# 開発環境を停止
-pnpm run dev:down
-
-# 本番環境を停止
-pnpm run prod:down
-
-# サービスの状態を確認
-pnpm run docker:ps         # 開発
-pnpm run prod:ps           # 本番
-```
-
-## プロジェクト構造
-
-```
-app/
-  db/
-    index.ts              # PostgreSQL接続プール
-  schemas/
-    todo.ts               # Zod バリデーションスキーマ
-  routes/
-    home.tsx              # ホームページ
-    todos.tsx             # Todo CRUD 操作
-  routes.ts               # ルート定義
-.env                      # 統合環境変数（Git 管理対象）
-.env.local.example        # ローカル開発用テンプレート
-.env.local                # ローカル設定（Git 除外）
-init.sql                  # データベース初期化スクリプト
-docker-compose.dev.yml    # 開発環境: PostgreSQL のみ
-docker-compose.prod.yml   # 本番環境: Next.js + PostgreSQL
-Dockerfile                # Docker ビルド設定
-```
-
-## 主な機能
-
-### Todoアプリ (`/todos`)
-
-- ✅ Todo の追加
-- ✅ Todo の編集
-- ✅ Todo の削除
-- ✅ 完了状態の切り替え
-- ✅ PostgreSQL でのデータ永続化
-- ✅ リアルタイムでデータベースと同期
-
-## API エンドポイント
-
-- `GET /todos` - 全ての Todo を取得
-- `POST /todos` - 新しい Todo を作成
-- `PUT /todos/[id]` - Todo を更新
-- `DELETE /todos/[id]` - Todo を削除
-
-## 環境変数について
-
-### ファイル構成
-
-- `.env` - 統合環境変数ファイル（Git 管理対象・秘密情報なし）
-- `.env.local.example` - ローカル開発用設定テンプレート（Git 管理対象）
-- `.env.local` - ローカル上書き設定（Git 除外・オプション）
-
-### 環境変数の値
-
-```env
-# ===== PostgreSQL 設定 =====
-POSTGRES_DB=todoapp
-POSTGRES_USER=todouser
-POSTGRES_PASSWORD=todopass
-
-# ===== データベース接続 =====
-# 開発環境: ローカルホスト接続
-DATABASE_URL=postgresql://todouser:todopass@localhost:5432/todoapp
-DATABASE_HOST=localhost
-DATABASE_PORT=5432
-
-# ===== Node.js 環境 =====
-NODE_ENV=development
-PORT=3000
-```
-
-### Docker での環境変数の取り扱い
-
-スタンドアローンモード相当の構成では、環境変数の扱いが重要です：
-
-1. **ビルド時の環境変数** - Dockerfile で ARG として定義（ビルド中のみ使用、最終イメージには含まれない）
-2. **実行時の環境変数** - docker-compose.yml の environment で設定（コンテナ起動時に読み込まれる）
-
-開発環境と本番環境の切り替え：
+## 検証
 
 ```bash
-# 開発環境（ホットリロード対応）
-pnpm run docker:dev
-
-# 本番環境（スタンドアローンモード）
-pnpm run docker:prod
-```
-
-## データベース接続設定
-
-- **Host**: localhost (開発) / postgres (Docker)
-- **Port**: 5432
-- **Database**: todoapp
-- **Username**: todouser
-- **Password**: todopass
-
-## トラブルシューティング
-
-### Playwright テストが失敗する場合
-
-Chromium ブラウザの起動に必要なシステムライブラリが不足している場合があります：
-
-```bash
-# Playwright のシステム依存関係を自動インストール
+pnpm typecheck
+pnpm check
+pnpm build
 pnpm exec playwright install --with-deps chromium
+pnpm exec playwright test
 ```
 
-### データベースに接続できない場合
+`pnpm check` は Biome の lint・整形の検査、`pnpm lint` は lint、`pnpm format` は整形の検査です。ファイルを書き換える場合は `--write` を付けます。
 
-1. Docker が起動していることを確認
+E2E は `tests/` にあり、`playwright.config.ts` がポート5173で開発サーバーを起動します。有効なブラウザは Chromium、ワーカーは1つです。テストは Todo の削除も行うため、専用 DB と専用の接続設定を使ってください。初期サンプルデータとフィクスチャの削除処理は `tests/helpers/todos.ts` を参照します。
 
-   ```bash
-   pnpm run docker:ps
-   ```
-
-2. ポート 5432 が使用されていないことを確認
-
-   ```bash
-   lsof -i :5432
-   ```
-
-3. 環境変数が正しく設定されていることを確認
-   ```bash
-   cat .env
-   ```
-
-### データをリセットしたい場合
-
-```bash
-# コンテナとボリュームを削除
-pnpm run dev:down
-docker volume rm todoapp-rr_postgres_data
-```
-
-新しくボリュームを作成して再起動すると、`init.sql` に定義した未完了のサンプルTodoが3件自動投入されます。
-
-### ログを確認したい場合
-
-```bash
-# PostgreSQL のログ確認
-pnpm run postgres:logs
-
-# 開発環境全体のログ確認
-pnpm run docker:logs
-```
-
-## ビルドとデプロイ
-
-### ローカルでのビルド
+## ビルド・起動
 
 ```bash
 pnpm build
+pnpm start
 ```
 
-本番用のバンドルが `build/` ディレクトリに生成されます。
+出力は `build/`、本番サーバーの標準ポートは3000です。起動時も `DATABASE_*` が必要です。
 
-### 本番実行
+## Docker
+
+開発は [docker-compose.dev.yml](docker-compose.dev.yml)（DBのみ）、本番用構成は [docker-compose.prod.yml](docker-compose.prod.yml)（React Router アプリと DB）です。
 
 ```bash
-# ローカルで本番相当のサーバーを起動
-pnpm start
-
-# Docker で起動
-pnpm run docker:prod
+pnpm docker:logs
+pnpm postgres:logs
+pnpm docker:ps
+pnpm dev:down
 ```
+
+本番用ファイルは `prod` プロファイルを持ちます。現在の `pnpm docker:prod` には `--profile prod` がないため、使用する場合は直接指定します。
+
+```bash
+docker-compose -f docker-compose.prod.yml --env-file .env --profile prod up -d --build
+# 停止
+docker-compose -f docker-compose.prod.yml --env-file .env --profile prod down
+```
+
+本番用の環境では `NODE_ENV=production`、`DATABASE_HOST=postgres`、`DATABASE_PORT=5432` にし、`POSTGRES_*` と DB 接続情報を一致させてください。Dockerfile が受け取る `DATABASE_URL` もコンテナ内部の DB を指す値にします。`DATABASE_URL` だけでは、アプリが必須とする5つの `DATABASE_*` を代用できません。
+
+Docker の実行段階で `pnpm` を使う構成です。実行イメージでの pnpm の利用可否を含め、デプロイ前にイメージのビルド・起動を検証してください。
+
+停止コマンドでは名前付きボリュームのデータは残ります。空ボリュームでの初期化時には `init.sql` のサンプルデータが投入されます。既存 DB の更新は初回初期化と分けて扱ってください。
+
+## トラブルシューティング
+
+- 必須変数のエラー：`.env` の `DATABASE_*` 5変数を確認します。
+- DB 接続失敗：DB の起動状態、ポート、アプリと Compose の DB名・ユーザー・パスワードの一致を確認します。
+- ブラウザ起動失敗：`pnpm exec playwright install --with-deps chromium` でブラウザと依存ライブラリを用意します。
+- E2E のデータ不整合：専用 DB を使い、フィクスチャと初期データの状態を確認します。
+
+品質チェック・CI は [.github/workflows/node.js.yml](.github/workflows/node.js.yml)、開発ルールは [AGENTS.md](AGENTS.md) を参照してください。
