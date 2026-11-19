@@ -30,7 +30,7 @@ pnpm exec playwright test
 ```
 
 - `pnpm lint` は lint、`pnpm format` は整形の検査、`pnpm check` は両方の検査。書き換える場合は意図して `--write` を付ける。
-- E2E は `tests/` と `playwright.config.ts` を参照。`webServer` がポート5173で `pnpm dev` を起動し、ワーカーは1つ。
+- E2E は `tests/` と `playwright.config.ts` を参照。`webServer` がポート5173で 事前build後に `pnpm start` を起動し、ワーカーは1つ。
 - テストは Todo を削除するため専用 DB を使う。`tests/helpers/todos.ts` のフィクスチャ操作に合わせ、既存サンプルデータの影響を確認する。
 - CI は `.github/workflows/node.js.yml` を参照する。実行できなかった確認は理由を報告する。
 

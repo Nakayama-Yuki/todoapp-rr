@@ -2,6 +2,7 @@
 
 # Node.js LTS の Alpine Linux ベースイメージ
 FROM node:lts-alpine AS base
+RUN npm install --global pnpm@12.21.0
 
 # ========================================
 # 依存関係インストール段階
@@ -14,10 +15,10 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # 依存関係ファイルをコピー（pnpmロックファイル推奨）
-COPY package.json pnpm-lock.yaml* ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 # pnpmで依存関係をインストール
-RUN corepack enable pnpm && pnpm i --frozen-lockfile
+RUN pnpm i --frozen-lockfile
 
 # ========================================
 # ビルド段階
@@ -40,7 +41,7 @@ ARG DATABASE_URL=postgresql://todouser:todopass@postgres:5432/todoapp
 ENV DATABASE_URL=${DATABASE_URL}
 
 # アプリケーションをビルド
-RUN corepack enable pnpm && pnpm run build
+RUN pnpm run build
 
 # ========================================
 # 本番環境実行段階

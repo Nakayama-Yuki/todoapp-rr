@@ -19,7 +19,9 @@
     "docker:ps": "docker-compose -f docker-compose.dev.yml ps",
     "prod:ps": "docker-compose -f docker-compose.prod.yml ps",
     "postgres:up": "docker-compose -f docker-compose.dev.yml --env-file .env up -d postgres",
-    "postgres:logs": "docker-compose -f docker-compose.dev.yml logs postgres"
+    "postgres:logs": "docker-compose -f docker-compose.dev.yml logs postgres",
+    "test:e2e": "playwright test",
+    "ci:check": "pnpm typecheck && pnpm check"
   },
   "dependencies": {
     "@react-router/node": "8.5.1",
