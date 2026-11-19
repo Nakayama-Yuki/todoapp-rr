@@ -3,10 +3,34 @@ name: Docker CI
 on:
   push:
     branches: [main]
-    paths: [Dockerfile, .dockerignore, .npmrc, init.sql, package.json, pnpm-lock.yaml, pnpm-workspace.yaml, 'app/**', 'src/**', 'public/**', '*config*', '.github/workflows/docker.yml']
+    paths:
+      - Dockerfile
+      - .dockerignore
+      - .npmrc
+      - init.sql
+      - package.json
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+      - "app/**"
+      - "src/**"
+      - "public/**"
+      - "*config*"
+      - ".github/workflows/docker.yml"
   pull_request:
     branches: [main]
-    paths: [Dockerfile, .dockerignore, .npmrc, init.sql, package.json, pnpm-lock.yaml, pnpm-workspace.yaml, 'app/**', 'src/**', 'public/**', '*config*', '.github/workflows/docker.yml']
+    paths:
+      - Dockerfile
+      - .dockerignore
+      - .npmrc
+      - init.sql
+      - package.json
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+      - "app/**"
+      - "src/**"
+      - "public/**"
+      - "*config*"
+      - ".github/workflows/docker.yml"
   workflow_dispatch:
 
 permissions:
