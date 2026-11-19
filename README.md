@@ -66,7 +66,7 @@ pnpm exec playwright test
 
 `pnpm check` は Biome の lint・整形の検査、`pnpm lint` は lint、`pnpm format` は整形の検査です。ファイルを書き換える場合は `--write` を付けます。
 
-E2E は `tests/` にあり、`playwright.config.ts` がポート5173で開発サーバーを起動します。有効なブラウザは Chromium、ワーカーは1つです。テストは Todo の削除も行うため、専用 DB と専用の接続設定を使ってください。初期サンプルデータとフィクスチャの削除処理は `tests/helpers/todos.ts` を参照します。
+E2E は `tests/` にあり、`playwright.config.ts` がポート5173で本番サーバーを起動します。有効なブラウザは Chromium、ワーカーは1つです。テストは Todo の削除も行うため、専用 DB と専用の接続設定を使ってください。初期サンプルデータとフィクスチャの削除処理は `tests/helpers/todos.ts` を参照します。
 
 ## ビルド・起動
 
@@ -110,3 +110,18 @@ Docker の実行段階で `pnpm` を使う構成です。実行イメージで�
 - E2E のデータ不整合：専用 DB を使い、フィクスチャと初期データの状態を確認します。
 
 品質チェック・CI は [.github/workflows/node.js.yml](.github/workflows/node.js.yml)、開発ルールは [AGENTS.md](AGENTS.md) を参照してください。
+
+## CIの実行手順
+
+`packageManager` に合わせてpnpm 12.21.0を使用します。CIは型・lint、ビルド、必要なブラウザの準備、本番E2Eの順で実行し、同じブランチの古い実行をキャンセルします。
+
+```bash
+pnpm install --frozen-lockfile
+pnpm ci:check
+pnpm build
+pnpm test:e2e
+```
+
+ブラウザ未導入の場合は `pnpm exec playwright install --with-deps chromium` を実行してください。ワークフローは [共通CI生成スクリプト](https://github.com/Nakayama-Yuki/calculator/blob/1c00b03232e04a008f1ddeb39e6c7a78deed1127/tools/web-ci/README.md) から生成します。
+
+CIはSecrets不要の一時PostgreSQL（`ci_user` / `ci_password` / `ci_test`）を使用します。ローカルE2Eにも専用DBの接続設定と `init.sql` の適用が必要です。既存データを持つDBでは実行しないでください。
