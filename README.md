@@ -17,13 +17,13 @@ cp .env.example .env
 
 `.env` に次の DB 接続情報を設定します。`app/db/index.ts` は `dotenv/config` で `.env` を読み込み、以下の5変数を検証します。`.env.local` の自動読込はありません。
 
-| 変数 | ローカルでの例 |
-| --- | --- |
-| `DATABASE_HOST` | `localhost` |
-| `DATABASE_PORT` | `5432` |
-| `DATABASE_USER` | `todouser` |
+| 変数                | ローカルでの例         |
+| ------------------- | ---------------------- |
+| `DATABASE_HOST`     | `localhost`            |
+| `DATABASE_PORT`     | `5432`                 |
+| `DATABASE_USER`     | `todouser`             |
 | `DATABASE_PASSWORD` | ローカルDBのパスワード |
-| `DATABASE_NAME` | `todoapp` |
+| `DATABASE_NAME`     | `todoapp`              |
 
 Docker Compose で DB を起動する場合は、現在の `.env.example` にない `POSTGRES_*` も `.env` に追記します。アプリ側の `DATABASE_*` と同じ DB名・ユーザー・パスワードを設定してください。
 
