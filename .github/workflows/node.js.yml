@@ -51,6 +51,7 @@ jobs:
       - name: Setup pnpm, Node.js and dependencies
         uses: pnpm/setup@v3
         with:
+          version: "12.21.0"
           runtime: node@lts
           cache: true
           require-lockfile: true
